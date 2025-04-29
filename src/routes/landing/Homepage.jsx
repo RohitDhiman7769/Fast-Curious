@@ -25,17 +25,17 @@ const Homepage = () => {
     <React.Fragment>
       <Suspense fallback={<div>Loading...</div>}>
         <Hero />
-        <WelcomeSection />
-        <ContactUsLanding />
+        {/* <WelcomeSection /> */}
+        {/* <ContactUsLanding /> */}
         <OurServices />
         <PizzaMenuPreview />
         <MenuPricingPreview />
         <Gallery />
         <StatsPreview />
         <MenuSlider />
-        <Newsletter />
+        {/* <Newsletter /> */}
         <BlogPreview />
-        <ContactLanding />
+        {/* <ContactLanding /> */}
         <ScrollButton />
       </Suspense>
     </React.Fragment>

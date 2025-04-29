@@ -2,18 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Route, Routes, BrowserRouter } from "react-router-dom";
 import Header from "./components/header/Header";
 import Footer from "./components/footer/Footer";
-import {
-  About,
-  Blog,
-  Cart,
-  Checkout,
-  Contact,
-  Homepage,
-  Menu,
-  Payment,
-  Register,
-  SingleItem,
-} from "./routes/index";
+import { About, Blog, Cart, Checkout, Contact, Homepage, Menu, Payment, Register, SingleItem, } from "./routes/index";
 import { products as productsData } from "./data/products";
 import { categories as categoriesData } from "./data/categories";
 import CartTotals from "./routes/cart/CartTotals";
@@ -28,7 +17,9 @@ import BlogPost from "./routes/blog-post/BlogPost";
 import Profile from "./routes/profile/Profile";
 import ResetLocation from "./helpers/ResetLocation";
 import { useMemo } from "react";
+
 const USERS_URL = import.meta.env.VITE_USERS_URL;
+
 function App() {
   const [categories, setCategories] = useState({
     all: [],
@@ -158,7 +149,7 @@ function App() {
         item.userSelectedAttributes.length === 0
           ? true
           : item.userSelectedAttributes[0].attributeValue ===
-            attributes[0].attributeValue
+          attributes[0].attributeValue
       );
       if (target.length === 0) {
         return undefined;
@@ -189,7 +180,7 @@ function App() {
         index = products.cart.findIndex(
           (item) =>
             item.userSelectedAttributes[0]?.attributeValue ===
-              userSelectedAttributes[0].attributeValue &&
+            userSelectedAttributes[0].attributeValue &&
             item.id === targetProduct.id
         );
       }
@@ -241,7 +232,7 @@ function App() {
       productsCopy = products.cart
         .map((item) =>
           item.userSelectedAttributes[0]?.attributeValue ===
-          productToUpdate[0].userSelectedAttributes[0]?.attributeValue
+            productToUpdate[0].userSelectedAttributes[0]?.attributeValue
             ? { ...item, quantity: item.quantity - 1 }
             : item
         )
@@ -304,9 +295,9 @@ function App() {
     );
     targetCategory !== "Menu"
       ? setProducts((prev) => ({
-          ...prev,
-          all: filteredByCategory,
-        }))
+        ...prev,
+        all: filteredByCategory,
+      }))
       : getAllProducts();
   };
 
