@@ -6,28 +6,29 @@ import ReactPaginate from "react-paginate";
 import { useState, useEffect } from "react";
 import ResetLocation from "../../helpers/ResetLocation";
 import { AnimatePresence, motion } from "framer-motion";
+import { products } from "../../data/products";
 import "./menu.css";
 
 const Menu = ({
-  allProducts,
+  // allProducts,
   activeCategory,
   categories,
   changeCategory,
-  handleAddProduct,
-  handleRemoveProduct,
-  findMenuItem,
+  // handleAddProduct,
+  // handleRemoveProduct,
+  // findMenuItem,
 }) => {
   const [itemOffset, setItemOffset] = useState(0);
   const [endOffset, setEndOffset] = useState(itemOffset + 5);
   const [currentProducts, setcurrentProducts] = useState(
-    [...allProducts].reverse().slice(itemOffset, endOffset)
+    [...products].reverse().slice(itemOffset, endOffset)
   );
   const [pageCountProducts, setpageCountProducts] = useState(
-    Math.ceil(allProducts.length / 5)
+    Math.ceil(products.length / 5)
   );
   const [currentPage, setCurrentPage] = useState(0);
   const handlePageClick = (event) => {
-    const newOffset = (event.selected * 5) % allProducts.length;
+    const newOffset = (event.selected * 5) % products.length;
     setItemOffset(newOffset);
     setCurrentPage(event.selected);
     ResetLocation();
@@ -37,15 +38,17 @@ const Menu = ({
     setEndOffset(5);
     setCurrentPage(0);
   };
+
   useEffect(() => {
     setEndOffset(itemOffset + 5);
-    setcurrentProducts([...allProducts].reverse().slice(itemOffset, endOffset));
-    setpageCountProducts(Math.ceil(allProducts.length / 5));
-  }, [allProducts, setEndOffset, endOffset, itemOffset]);
-  useEffect(() => {
-    document.title = `${activeCategory} | Pizza Time`;
-    resetPagination();
-  }, [activeCategory]);
+    setcurrentProducts([...products].reverse().slice(itemOffset, endOffset));
+    setpageCountProducts(Math.ceil(products.length / 5));
+  }, [products, setEndOffset, endOffset, itemOffset]);
+  
+  // useEffect(() => {
+  //   document.title = `${activeCategory} | Pizza Time`;
+  //   resetPagination();
+  // }, [activeCategory]);
 
   return (
     <motion.main
@@ -59,7 +62,7 @@ const Menu = ({
         categories={categories}
         changeCategory={changeCategory}
         resetPagination={resetPagination}
-        findMenuItem={findMenuItem}
+        // findMenuItem={findMenuItem}
       />
       <article className="menu__items">
         <AnimatePresence mode="sync">
@@ -76,8 +79,8 @@ const Menu = ({
                 <MenuGridItem
                   key={singleProduct.id}
                   singleProduct={singleProduct}
-                  handleAddProduct={handleAddProduct}
-                  handleRemoveProduct={handleRemoveProduct}
+                  // handleAddProduct={handleAddProduct}
+                  // handleRemoveProduct={handleRemoveProduct}
                 />
               </motion.div>
             ))

@@ -6,8 +6,8 @@ import { v4 as uuidv4 } from "uuid";
 import validateForm from "../../components/validateForm";
 import PaymentSuccess from "./PaymentSuccess";
 import Card from "./Cards.jsx";
-
-const Payment = ({ cartItems, orderSummary }) => {
+import { useSelector } from "react-redux";
+const Payment = () => {
   const [formValue, setFormValue] = useState({
     firstname: "",
     lastname: "",
@@ -20,6 +20,9 @@ const Payment = ({ cartItems, orderSummary }) => {
   const [formError, setFormError] = useState({});
   const [transactionId, setTransactionId] = useState(0);
   const validate = validateForm("payment");
+
+  const cartItems = useSelector((store)=>store.products.items.cart)
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -46,7 +49,7 @@ const Payment = ({ cartItems, orderSummary }) => {
           {submit && Object.keys(formError).length === 0 ? (
             <PaymentSuccess
               transactionId={transactionId}
-              orderSummary={orderSummary}
+              // orderSummary={orderSummary}
             />
           ) : (
             <section className="payment__inner">

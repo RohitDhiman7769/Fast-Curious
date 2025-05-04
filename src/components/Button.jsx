@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 
-const LinkButton = ({ className, to, onClick, children }) => {
-    return <Link onClick={onClick} className={className} to={to}>{children}</Link>;
+const LinkButton = (props) => {
+    return <Link onClick={props.onClick} className={props.className} type={props.type} to={props.to} disabled={props.disabled}>{props.children}</Link>;
 }
 
 export default LinkButton;

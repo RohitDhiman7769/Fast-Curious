@@ -4,6 +4,8 @@ import { v4 as uuidv4 } from "uuid";
 import { motion } from "framer-motion";
 import ResetLocation from "../../helpers/ResetLocation";
 import "./register.css";
+import InputBtn from "../../components/InputBtn";
+import NotFound from "../not-found/NotFound";
 const Register = ({ activateLoginModal }) => {
   const [formValue, setFormValue] = useState({
     id: "",
@@ -31,14 +33,8 @@ const Register = ({ activateLoginModal }) => {
   };
 
   const createUser = async (user) => {
-    const users = await getUsers();
-    const repetitiveEmail = users.some((u) => u.email === user.email);
-    const id = uuidv4();
-    user.id = id;
     try {
-      if (repetitiveEmail) {
-        return false;
-      } else {
+          console.log(user)
         const response = await fetch(import.meta.env.VITE_USERS_URL, {
           method: "POST",
           headers: {
@@ -52,7 +48,7 @@ const Register = ({ activateLoginModal }) => {
           console.log("Error in createUser");
           return false;
         }
-      }
+      // }
     } catch (err) {
       console.log(err.message);
       return false;
@@ -113,8 +109,9 @@ const Register = ({ activateLoginModal }) => {
 
 
   const handleValidation = (e) => {
-    const { name, value } = e.target;
-    setFormValue({ ...formValue, [name]: value });
+    console.log(e)
+    // const { name, value } = e.target;
+    setFormValue({ ...formValue, [e.name]: e.value });
   };
 
 
@@ -126,7 +123,9 @@ const Register = ({ activateLoginModal }) => {
 
 
   return (
-
+    <>
+    {!localStorage.getItem('validLogin') ? <><NotFound /></>
+      :
     <motion.main
       className="register"
       initial={{ opacity: 0, translateX: -300 }}
@@ -171,67 +170,26 @@ const Register = ({ activateLoginModal }) => {
             <form
               className="register__form"
               onSubmit={handleSubmit}>
-              {registrationFail && (
-                <p className="register__error">
-                  Seems like this email has already been registered!
-                </p>
-              )}
               <section className="register__form__field">
-                <input
-                  type="text"
-                  placeholder="Full name"
-                  name="fullname"
-                  value={formValue.fullname}
-                  onChange={handleValidation}
-                />
+                <InputBtn type={'text'} placeholder={'Full Name'} name={'fullname'} value={formValue.fullname} getData={handleValidation} />
                 <span className="register__error">{formError.fullname}</span>
               </section>
               <section className="register__form__field">
-                <input
-                  type="text"
-                  placeholder="Email"
-                  name="email"
-                  value={formValue.email}
-                  onChange={handleValidation}
-                />
+                <InputBtn type={'text'} placeholder={'Email'} name={'email'} value={formValue.email} getData={handleValidation} />
                 <span className="register__error">{formError.email}</span>
               </section>
               <section className="register__form__field">
-                <input
-                  type="password"
-                  placeholder="New password"
-                  name="password"
-                  value={formValue.password}
-                  onChange={handleValidation}
-                />
+                <InputBtn type={'password'} placeholder={'New password'} name={'password'} value={formValue.password} getData={handleValidation} />
                 <span className="register__error">{formError.password}</span>
-                <input
-                  type="password"
-                  placeholder="Repeat password"
-                  name="repeatPassword"
-                  value={formValue.repeatPassword}
-                  onChange={handleValidation}
-                />
+                <InputBtn type={'password'} placeholder={'Repeat password'} name={'repeatPassword'} value={formValue.repeatPassword} getData={handleValidation} />
                 <span className="register__error">{formError.repeatPassword}</span>
               </section>
               <section className="register__form__field-b">
-                <input
-                  type="text"
-                  placeholder="Address (optional)"
-                  name="address"
-                  value={formValue.address}
-                  onChange={handleValidation}
-                />
+                <InputBtn type={'text'} placeholder={'Address (optional)'} name={'address'} value={formValue.address} getData={handleValidation} />
                 <span className="register__error">{formError.address}</span>
               </section>
               <section className="register__form__field-b">
-                <input
-                  type="text"
-                  placeholder="Number (optional)"
-                  name="number"
-                  value={formValue.number}
-                  onChange={handleValidation}
-                />
+                <InputBtn type={'text'} placeholder={'Number (optional)'} name={'number'} value={formValue.number} getData={handleValidation} />
                 <span className="register__error">{formError.number}</span>
               </section>
               <p className="terms-warning register__form__terms">
@@ -247,6 +205,8 @@ const Register = ({ activateLoginModal }) => {
             </form>
           )}
     </motion.main>
+        }
+        </>
   );
 };
 

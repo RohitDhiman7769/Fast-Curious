@@ -1,5 +1,5 @@
 import "./header.css";
-import React from "react";
+import React, { useEffect } from "react";
 import logo from "../../assets/images/logo.png";
 import openMenu from "../../assets/images/open-menu.svg";
 import closeMenu from "../../assets/images/close-menu.svg";
@@ -8,11 +8,14 @@ import Cart from "../../assets/images/cart-icon-dark.png";
 import SuccessMsg from "../SuccessMsg";
 import ResetLocation from "../../helpers/ResetLocation";
 import headerMenu from "../../data/header-menu";
-
+import { useDispatch, useSelector } from "react-redux";
+import { handleLogout } from "../../utils/getUser";
+import { addProductItem } from "../../store/products";
+import { products } from "../../data/products";
 const Header = ({
   loginModal,
-  orderSummary,
-  handleLogout,
+  // orderSummary,
+  // handleLogout,
   // showModal,
   isNavOpen,
   setIsNavOpen,
@@ -20,6 +23,16 @@ const Header = ({
   isValidLogin,
   activateLoginModal,
 }) => {
+  const dispatch = useDispatch()
+  const orderSummary = useSelector((store) => store?.orderSummary?.summeryData)
+  console.log(orderSummary)
+
+  useEffect(() => {
+    console.log(products)
+    dispatch(addProductItem({ all: products }))
+
+  }, [])
+  
   const showModal = () => {
     setIsNavOpen(!isNavOpen);
   };
@@ -54,9 +67,8 @@ const Header = ({
         </NavLink>
         <ul
           id="main-menu"
-          className={`header__nav__menu flex-row pop-font ${
-            isNavOpen ? "active" : ""
-          }`}>
+          className={`header__nav__menu flex-row pop-font ${isNavOpen ? "active" : ""
+            }`}>
           {headerMenu.map(({ to, label }) => (
             <li key={to}>
               <NavLink
@@ -65,8 +77,7 @@ const Header = ({
                   hideMenu();
                 }}
                 className={({ isActive }) =>
-                  `txt-white ${
-                    isActive && label !== "Home" ? "header-active-link" : ""
+                  `txt-white ${isActive && label !== "Home" ? "header-active-link" : ""
                   }`
                 }
                 aria-current={({ isActive }) => (isActive ? "page" : undefined)}
@@ -99,7 +110,7 @@ const Header = ({
                   className="passive-button-style txt-white"
                   onClick={() => {
                     ResetLocation();
-                    handleLogout();
+                    handleLogout(dispatch);
                   }}>
                   Log out
                 </Link>
@@ -126,7 +137,7 @@ const Header = ({
                   aria-hidden="true"
                 />
                 <p>Cart</p>
-                <p>({orderSummary.quantity})</p>
+                <p>({orderSummary?.quantity})</p>
               </NavLink>
             </div>
           </li>

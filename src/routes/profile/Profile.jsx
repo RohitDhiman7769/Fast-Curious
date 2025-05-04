@@ -3,14 +3,17 @@ import ResetLocation from "../../helpers/ResetLocation";
 import { useNavigate } from "react-router-dom";
 import validateForm from "../../components/validateForm";
 import './profile.css'
+import NotFound from "../not-found/NotFound";
+import { useDispatch } from "react-redux";
 
-const Profile = ({ currentUser, handleLogout, updateUser }) => {
+const Profile = ({ currentUser, updateUser }) => {
     const [editForm, setEditForm] = useState(false);
     const [formValue, setFormValue] = useState({ email: '', password: '', fullname: '', address: '', number: '' });
     const [formErrors, setFormErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const [confirmationModal, setConfirmationModal] = useState(false);
     const navigate = useNavigate()
+    const dispatch = useDispatch()
     const validate = validateForm("profile");
     const toggleForm = () => {
         setEditForm(!editForm);
@@ -61,7 +64,7 @@ const Profile = ({ currentUser, handleLogout, updateUser }) => {
             });
             if (response.status === 200) {
                 navigate("/");
-                handleLogout();
+                // handleLogout(dispatch);
                 return true;
             }
         }
@@ -75,6 +78,8 @@ const Profile = ({ currentUser, handleLogout, updateUser }) => {
         document.title = "Profile | Pizza Time";
     }, []);
     return (
+        <>
+        {!localStorage.getItem('validLogin')  ? <><NotFound/></> : 
         <main className="profile">
             <h2>Profile information</h2>
             <p>Personal details and application</p>
@@ -173,6 +178,8 @@ const Profile = ({ currentUser, handleLogout, updateUser }) => {
                 </section>
             }
         </main>
+    }
+        </>
     )
 }
 

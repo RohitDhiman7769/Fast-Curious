@@ -17,26 +17,33 @@ import BlogPost from "./routes/blog-post/BlogPost";
 import Profile from "./routes/profile/Profile";
 import ResetLocation from "./helpers/ResetLocation";
 import { useMemo } from "react";
-
+import { Provider, useDispatch, useSelector } from "react-redux";
+import appStore from './store/appStore'
+import { clearCart, addItem } from "./store/orderSummary";
+import {CheckRepeatableProducts} from './utils/getUser'
 const USERS_URL = import.meta.env.VITE_USERS_URL;
 
 function App() {
+  // const dispatch = useDispatch()
+  // const orderSummaryData = useSelector((store) => store.orderSummary.summeryData)
+
+
   const [categories, setCategories] = useState({
     all: [],
     active: "Menu",
   });
-  const [products, setProducts] = useState({ all: [], cart: [] });
-  const [orderSummary, setOrderSummary] = useState({
-    quantity: 0,
-    payment: 0,
-    taxes: 0,
-  });
-  const [isValidLogin, setIsValidLogin] = useState(false);
+  // const [products, setProducts] = useState({ all: [], cart: [] });
+  // const [orderSummary, setOrderSummary] = useState({
+  //   quantity: 0,
+  //   payment: 0,
+  //   taxes: 0,
+  // });
+  // const [isValidLogin, setIsValidLogin] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState({});
   const activeCategory = useMemo(() => categories.active, [categories]);
-  const productsCart = useMemo(() => products.cart, [products]);
+  // const productsCart = useMemo(() => products.cart, [products]);
 
   const getUser = async (id) => {
     try {
@@ -86,46 +93,53 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (isValidLogin && sessionStorage.getItem("validLogin") === null) {
-      sessionStorage.setItem("validLogin", true);
+    if (localStorage.getItem('validLogin') && localStorage.getItem('validLogin') === null) {
+      localStorage.setItem("validLogin", true);
     }
-    if (sessionStorage.getItem("validLogin") !== null) {
-      setIsValidLogin(sessionStorage.getItem("validLogin"));
+    if (localStorage.getItem('validLogin') !== null) {
+      localStorage.setItem('validLogin', true)
     }
-  }, [isValidLogin]);
+  }, []);
 
   const activateLoginModal = () => {
     hideMenu();
     setIsLoginModalOpen(!isLoginModalOpen);
   };
 
-  const handleLogout = () => {
-    setIsValidLogin(false);
-    hideMenu();
-    setCurrentUser({});
-    ResetLocation();
-    setProducts((prev) => ({ ...prev, cart: [] }));
-    setOrderSummary({
-      quantity: 0,
-      payment: 0,
-      taxes: 0,
-    });
-    sessionStorage.clear();
-  };
+  // const handleLogout = () => {
+  //   // setIsValidLogin(false);
+  //   localStorage.setItem('validLogin', false)
+  //   hideMenu();
+  //   setCurrentUser({});
+  //   ResetLocation();
+  //   setProducts((prev) => ({ ...prev, cart: [] }));
+  //   // setOrderSummary({
+  //   //   quantity: 0,
+  //   //   payment: 0,
+  //   //   taxes: 0,
+  //   // });
 
-  const findMenuItem = (e) => {
-    e.preventDefault();
-    const inputValue = e.target.value.toLowerCase();
-    const collectData = products.all.filter((product) =>
-      product.ItemName.toLowerCase().includes(inputValue)
-    );
+  //   // dispatch(clearCart({
+  //   //   quantity: 0,
+  //   //   payment: 0,
+  //   //   taxes: 0,
+  //   // }))
+  //   // sessionStorage.clear();
+  // };
 
-    if (collectData.length > 0) {
-      setProducts((prev) => ({ ...prev, all: collectData }));
-    } else {
-      setProducts((prev) => ({ ...prev, all: [] }));
-    }
-  };
+  // const findMenuItem = (e) => {
+  //   e.preventDefault();
+  //   const inputValue = e.target.value.toLowerCase();
+  //   const collectData = products.all.filter((product) =>
+  //     product.ItemName.toLowerCase().includes(inputValue)
+  //   );
+
+  //   if (collectData.length > 0) {
+  //     setProducts((prev) => ({ ...prev, all: collectData }));
+  //   } else {
+  //     setProducts((prev) => ({ ...prev, all: [] }));
+  //   }
+  // };
 
   const hideMenu = () => {
     setIsNavOpen(false);
@@ -135,150 +149,168 @@ function App() {
     setCategories((prev) => ({ ...prev, all: categoriesData }));
   };
 
-  const getAllProducts = () => {
-    setProducts((prev) => ({ ...prev, all: productsData }));
-  };
+  // const getAllProducts = () => {
+  //   setProducts((prev) => ({ ...prev, all: productsData }));
+  // };
 
-  const CheckRepeatableProducts = (targetProduct, attributes) => {
-    let inCart = products.cart.some((item) => item.id === targetProduct.id);
-    if (!inCart) {
-      return undefined;
-    } else {
-      let match = products.cart.filter((item) => item.id === targetProduct.id);
-      let target = match.filter((item) =>
-        item.userSelectedAttributes.length === 0
-          ? true
-          : item.userSelectedAttributes[0].attributeValue ===
-          attributes[0].attributeValue
-      );
-      if (target.length === 0) {
-        return undefined;
-      }
-      return target;
-    }
-  };
-  const handleAddProduct = (targetProduct, userSelectedAttributes) => {
-    const productAlreadyInCart = CheckRepeatableProducts(
-      targetProduct,
-      userSelectedAttributes
-    );
-    let currentCartItems = [...products.cart];
-    let newQuantity;
-    if (productAlreadyInCart === undefined) {
-      const itemToAdd = targetProduct;
-      newQuantity = 1;
-      currentCartItems.push({
-        ...itemToAdd,
-        userSelectedAttributes,
-        quantity: newQuantity,
-      });
-    } else {
-      let index;
-      if (userSelectedAttributes.length === 0) {
-        index = products.cart.findIndex((item) => item.id === targetProduct.id);
-      } else {
-        index = products.cart.findIndex(
-          (item) =>
-            item.userSelectedAttributes[0]?.attributeValue ===
-            userSelectedAttributes[0].attributeValue &&
-            item.id === targetProduct.id
-        );
-      }
-      if (index !== -1) {
-        newQuantity = products.cart[index].quantity;
+  // const CheckRepeatableProducts = (targetProduct, attributes) => {
+  //   let inCart = products.cart.some((item) => item.id === targetProduct.id);
+  //   if (!inCart) {
+  //     return undefined;
+  //   } else {
+  //     let match = products.cart.filter((item) => item.id === targetProduct.id);
+  //     let target = match.filter((item) =>
+  //       item.userSelectedAttributes.length === 0
+  //         ? true
+  //         : item.userSelectedAttributes[0].attributeValue ===
+  //         attributes[0].attributeValue
+  //     );
+  //     if (target.length === 0) {
+  //       return undefined;
+  //     }
+  //     return target;
+  //   }
+  // };
+  // const handleAddProduct = (targetProduct, userSelectedAttributes) => {
+  //   const productAlreadyInCart = CheckRepeatableProducts(
+  //     targetProduct,
+  //     userSelectedAttributes
+  //   );
+  //   let currentCartItems = [...products.cart];
+  //   let newQuantity;
+  //   if (productAlreadyInCart === undefined) {
+  //     const itemToAdd = targetProduct;
+  //     newQuantity = 1;
+  //     currentCartItems.push({
+  //       ...itemToAdd,
+  //       userSelectedAttributes,
+  //       quantity: newQuantity,
+  //     });
+  //   } else {
+  //     let index;
+  //     if (userSelectedAttributes.length === 0) {
+  //       index = products.cart.findIndex((item) => item.id === targetProduct.id);
+  //     } else {
+  //       index = products.cart.findIndex(
+  //         (item) =>
+  //           item.userSelectedAttributes[0]?.attributeValue ===
+  //           userSelectedAttributes[0].attributeValue &&
+  //           item.id === targetProduct.id
+  //       );
+  //     }
+  //     if (index !== -1) {
+  //       newQuantity = products.cart[index].quantity;
 
-        currentCartItems[index] = {
-          ...products.cart[index],
-          quantity: newQuantity + 1,
-        };
-      }
-    }
+  //       currentCartItems[index] = {
+  //         ...products.cart[index],
+  //         quantity: newQuantity + 1,
+  //       };
+  //     }
+  //   }
 
-    const totalCartQuantity = currentCartItems.reduce(
-      (total, item) => total + item.quantity,
-      0
-    );
-    const jsonUser = JSON.stringify(currentCartItems);
-    sessionStorage.setItem("cartItems", jsonUser);
-    setProducts((prev) => ({ ...prev, cart: currentCartItems }));
-    sessionStorage.setItem("cartQuantity", totalCartQuantity);
-    setOrderSummary((prev) => ({
-      ...prev,
-      quantity: totalCartQuantity,
-    }));
-    successMsg();
-  };
+  //   const totalCartQuantity = currentCartItems.reduce(
+  //     (total, item) => total + item.quantity,
+  //     0
+  //   );
+  //   const jsonUser = JSON.stringify(currentCartItems);
+  //   sessionStorage.setItem("cartItems", jsonUser);
+  //   setProducts((prev) => ({ ...prev, cart: currentCartItems }));
+  //   sessionStorage.setItem("cartQuantity", totalCartQuantity);
+  //   // setOrderSummary((prev) => ({
+  //   //   ...prev,
+  //   //   quantity: totalCartQuantity,
+  //   // }));
+
+
+  //   dispatch(addItem({
+  //     quantity: totalCartQuantity,
+  //   }))
+  //   successMsg();
+  // };
 
   useEffect(() => {
     if (sessionStorage.getItem("cartItems") !== null) {
       const jsonCartItems = sessionStorage.getItem("cartItems");
       const cartItems = JSON.parse(jsonCartItems);
-      setProducts((prev) => ({ ...prev, cart: cartItems }));
+      // setProducts((prev) => ({ ...prev, cart: cartItems }));
     }
     const cartQuantitySession = sessionStorage.getItem("cartQuantity");
     if (cartQuantitySession !== null) {
-      setOrderSummary((prev) => ({
-        ...prev,
-        quantity: cartQuantitySession,
-      }));
+      // setOrderSummary((prev) => ({
+      //   ...prev,
+      //   quantity: cartQuantitySession,
+      // }));
+
+      // dispatch(addItem({
+      //   quantity: totalCartQuantity,
+      // }))
     }
   }, []);
 
-  const handleRemoveProduct = (target, targetAttr) => {
-    let productToUpdate = CheckRepeatableProducts(target, targetAttr);
-    const hasAttribute = productToUpdate[0].attributes.length > 0;
-    let productsCopy = [];
-    if (hasAttribute) {
-      productsCopy = products.cart
-        .map((item) =>
-          item.userSelectedAttributes[0]?.attributeValue ===
-            productToUpdate[0].userSelectedAttributes[0]?.attributeValue
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
-        )
-        .filter((item) => item.quantity > 0);
-    } else {
-      productsCopy = products.cart
-        .map((item) =>
-          item.id === productToUpdate[0].id
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
-        )
-        .filter((item) => item.quantity > 0);
-    }
-    setProducts((prev) => ({ ...prev, cart: productsCopy }));
-    const jsonUser = JSON.stringify(productsCopy);
-    sessionStorage.setItem("cartItems", jsonUser);
+  // const handleRemoveProduct = (target, targetAttr) => {
+  //   let productToUpdate = CheckRepeatableProducts(target, targetAttr,productsData);
+  //   const hasAttribute = productToUpdate[0].attributes.length > 0;
+  //   let productsCopy = [];
+  //   if (hasAttribute) {
+  //     productsCopy = products.cart
+  //       .map((item) =>
+  //         item.userSelectedAttributes[0]?.attributeValue ===
+  //           productToUpdate[0].userSelectedAttributes[0]?.attributeValue
+  //           ? { ...item, quantity: item.quantity - 1 }
+  //           : item
+  //       )
+  //       .filter((item) => item.quantity > 0);
+  //   } else {
+  //     productsCopy = products.cart
+  //       .map((item) =>
+  //         item.id === productToUpdate[0].id
+  //           ? { ...item, quantity: item.quantity - 1 }
+  //           : item
+  //       )
+  //       .filter((item) => item.quantity > 0);
+  //   }
+  //   setProducts((prev) => ({ ...prev, cart: productsCopy }));
+  //   const jsonUser = JSON.stringify(productsCopy);
+  //   sessionStorage.setItem("cartItems", jsonUser);
 
-    const sum = [...productsCopy].reduce((a, b) => a + b.quantity, 0);
-    sessionStorage.setItem("cartQuantity", sum);
-    setOrderSummary((prev) => ({
-      ...prev,
-      quantity: sum,
-    }));
-  };
+  //   const sum = [...productsCopy].reduce((a, b) => a + b.quantity, 0);
+  //   sessionStorage.setItem("cartQuantity", sum);
+  //   // setOrderSummary((prev) => ({
+  //   //   ...prev,
+  //   //   quantity: sum,
+  //   // }));
 
-  const clearCart = () => {
-    setProducts((prev) => ({ ...prev, cart: [] }));
-    setOrderSummary({
-      quantity: 0,
-      payment: 0,
-      taxes: 0,
-    });
-    sessionStorage.removeItem("cartItems");
-    sessionStorage.removeItem("cartQuantity");
-    ResetLocation();
-  };
+  //   // dispatch(addItem({
+  //   //   quantity: sum,
+  //   // }))
+  // };
+
+  // const clearCartData = () => {
+  //   setProducts((prev) => ({ ...prev, cart: [] }));
+  //   // dispatch(clearCart({
+  //   //   quantity: 0,
+  //   //   payment: 0,
+  //   //   taxes: 0,
+  //   // }))
+  //   sessionStorage.removeItem("cartItems");
+  //   sessionStorage.removeItem("cartQuantity");
+  //   ResetLocation();
+  // };
 
   const getTotalPrice = (items) => {
     let total = items.reduce((acc, item) => {
       return acc + item.ItemPrice * item.quantity;
     }, 0);
-    setOrderSummary((prev) => ({
-      ...prev,
-      total: total.toFixed(2),
-      taxes: ((total * 10) / 100).toFixed(2),
-    }));
+    // setOrderSummary((prev) => ({
+    //   ...prev,
+    //   total: total.toFixed(2),
+    //   taxes: ((total * 10) / 100).toFixed(2),
+    // }));
+
+    // dispatch(addItem({
+    //   total: total.toFixed(2),
+    //   taxes: ((total * 10) / 100).toFixed(2),
+    // }))
   };
 
   const successMsg = () => {
@@ -298,15 +330,16 @@ function App() {
         ...prev,
         all: filteredByCategory,
       }))
-      : getAllProducts();
+      :
+       getAllProducts();
   };
 
-  useEffect(() => {
-    getAllCategories();
-    getAllProducts();
-    getProductsByCategory(activeCategory);
-    getTotalPrice(productsCart);
-  }, [activeCategory, productsCart]);
+  // useEffect(() => {
+  //   getAllCategories();
+  //   // getAllProducts();
+  //   getProductsByCategory(activeCategory);
+  //   getTotalPrice(productsCart);
+  // }, [activeCategory, productsCart]);
 
   const changeCategory = (newCategory) => {
     setCategories((prev) => ({ ...prev, active: newCategory }));
@@ -315,164 +348,166 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Header
-        loginModal={
-          <LoginModal
-            setIsValidLogin={setIsValidLogin}
-            setIsLoginModalOpen={setIsLoginModalOpen}
-            isLoginModalOpen={isLoginModalOpen}
-            hideMenu={hideMenu}
-            getUser={getUser}
+      <Provider store={appStore}>
+
+        <Header
+          loginModal={
+            <LoginModal
+              // setIsValidLogin={setIsValidLogin}
+              setIsLoginModalOpen={setIsLoginModalOpen}
+              isLoginModalOpen={isLoginModalOpen}
+              hideMenu={hideMenu}
+              getUser={getUser}
+            />
+          }
+          activateLoginModal={activateLoginModal}
+          setIsNavOpen={setIsNavOpen}
+          isNavOpen={isNavOpen}
+          hideMenu={hideMenu}
+          // handleLogout={handleLogout}
+          // isValidLogin={isValidLogin}
+          // orderSummary={orderSummaryData}
+        />
+        <Routes>
+          <Route
+            path="/"
+            element={<Homepage />}
           />
-        }
-        activateLoginModal={activateLoginModal}
-        setIsNavOpen={setIsNavOpen}
-        isNavOpen={isNavOpen}
-        hideMenu={hideMenu}
-        handleLogout={handleLogout}
-        isValidLogin={isValidLogin}
-        orderSummary={orderSummary}
-      />
-      <Routes>
-        <Route
-          path="/"
-          element={<Homepage />}
-        />
 
-        <Route
-          path="/cart"
-          element={
-            <Cart
-              cartItems={products.cart}
-              CartItem={
-                <CartItem
-                  clearCart={clearCart}
-                  cartItems={products.cart}
-                  handleAddProduct={handleAddProduct}
-                  handleRemoveProduct={handleRemoveProduct}
-                  cartTotals={
-                    <CartTotals
-                      className="cart-totals"
-                      orderSummary={orderSummary}
-                      isValidLogin={isValidLogin}
-                      activateLoginModal={activateLoginModal}
-                    />
-                  }
-                />
-              }
-            />
-          }
-        />
+          <Route
+            path="/cart"
+            element={
+              <Cart
+                // cartItems={products.cart}
+                CartItem={
+                  <CartItem
+                    // clearCart={clearCartData}
+                    // cartItems={products.cart}
+                    // handleAddProduct={handleAddProduct}
+                    // handleRemoveProduct={handleRemoveProduct}
+                    cartTotals={
+                      <CartTotals
+                        className="cart-totals"
+                        // orderSummary={orderSummaryData}
+                        // isValidLogin={isValidLogin}
+                        activateLoginModal={activateLoginModal}
+                      />
+                    }
+                  />
+                }
+              />
 
-        <Route
-          exact
-          path="/menu"
-          element={
-            <Menu
-              findMenuItem={findMenuItem}
-              allProducts={products.all}
-              categories={categories.all}
-              changeCategory={changeCategory}
-              handleAddProduct={handleAddProduct}
-              handleRemoveProduct={handleRemoveProduct}
-              activeCategory={categories.active}
-            />
-          }
-        />
-        <Route
-          path="/menu/:name"
-          element={
-            <SingleItem
-              handleAddProduct={handleAddProduct}
-              handleRemoveProduct={handleRemoveProduct}
-            />
-          }
-        />
-        <Route
-          path="/contact"
-          element={<Contact />}
-        />
-        <Route
-          exact
-          path="/blog"
-          element={<Blog />}
-        />
-        <Route
-          path="/blog/:name"
-          element={<BlogPost />}
-        />
-        <Route
-          path="/about"
-          element={<About />}
-        />
-        <Route
-          path="/register"
-          element={
-            isValidLogin ? (
-              <NotFound />
-            ) : (
+              // <Cart/>
+            }
+          />
+
+          <Route
+            exact
+            path="/menu"
+            element={
+              <Menu
+                // findMenuItem={findMenuItem}
+                // allProducts={products.all}
+                categories={categories.all}
+                changeCategory={changeCategory}
+                // handleAddProduct={handleAddProduct}
+                // handleRemoveProduct={handleRemoveProduct}
+                activeCategory={categories.active}
+              />
+
+              // <Menu/>
+            }
+          />
+          <Route
+            path="/menu/:name"
+            element={
+              <SingleItem
+                // handleAddProduct={handleAddProduct}
+                // handleRemoveProduct={handleRemoveProduct}
+              />
+            }
+          />
+          <Route
+            path="/contact"
+            element={<Contact />}
+          />
+          <Route
+            exact
+            path="/blog"
+            element={<Blog />}
+          />
+          <Route
+            path="/blog/:name"
+            element={<BlogPost />}
+          />
+          <Route
+            path="/about"
+            element={<About />}
+          />
+          <Route
+            path="/register"
+            element={
               <Register activateLoginModal={activateLoginModal} />
-            )
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            !isValidLogin ? (
-              <NotFound />
-            ) : (
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+
               <Profile
                 currentUser={currentUser}
                 getUser={getUser}
-                handleLogout={handleLogout}
+                // handleLogout={handleLogout}
                 updateUser={updateUser}
               />
-            )
-          }
-        />
-        <Route
-          path="/checkout"
-          element={
-            <Checkout
-              cartItems={products.cart}
-              orderSummary={orderSummary}
-              currentUser={currentUser}
-            />
-          }
-        />
-        <Route
-          path="/payment"
-          element={
-            <Payment
-              cartItems={products.cart}
-              orderSummary={orderSummary}
-              currentUser={currentUser}
-            />
-          }
-        />
-        <Route
-          path="/careers"
-          element={<Careers />}
-        />
-        <Route
-          path="*"
-          element={<NotFound />}
-        />
-        <Route
-          path="/refunds"
-          element={<Refunds />}
-        />
-        <Route
-          path="/terms"
-          element={<Terms />}
-        />
-        <Route
-          path="/privacy"
-          element={<Privacy />}
-        />
-      </Routes>
+            }
 
-      <Footer />
+          />
+          <Route
+            path="/checkout"
+            element={
+              <Checkout
+                // cartItems={products.cart}
+                // orderSummary={orderSummaryData}
+                currentUser={currentUser}
+              />
+            }
+          />
+          <Route
+            path="/payment"
+            element={
+              <Payment
+                // cartItems={products.cart}
+                // orderSummary={orderSummaryData}
+                currentUser={currentUser}
+              />
+            }
+          />
+          <Route
+            path="/careers"
+            element={<Careers />}
+          />
+          <Route
+            path="*"
+            element={<NotFound />}
+          />
+          <Route
+            path="/refunds"
+            element={<Refunds />}
+          />
+          <Route
+            path="/terms"
+            element={<Terms />}
+          />
+          <Route
+            path="/privacy"
+            element={<Privacy />}
+          />
+
+
+        </Routes>
+        <Footer />
+      </Provider>
     </BrowserRouter>
   );
 }

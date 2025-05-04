@@ -8,7 +8,7 @@ import { useEffect } from "react";
 
 const LoginModal = ({
   setIsLoginModalOpen,
-  setIsValidLogin,
+  // setIsValidLogin,
   isLoginModalOpen,
   hideMenu,
   getUser,
@@ -78,7 +78,8 @@ const LoginModal = ({
       setFormValue((prev) => ({ email: prev.email, password: "" }));
       setFormError({});
       setVerificationError("");
-      setIsValidLogin(true);
+      // setIsValidLogin(true);
+      localStorage.setItem('validLogin', true)
       navigate("/menu");
     }
   };

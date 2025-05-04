@@ -4,7 +4,7 @@ import AddToCartButton from '../cart/AddToCartButton';
 import Attribute from './Attribute';
 import ResetLocation from "../../helpers/ResetLocation";
 
-const MenuGridItem = ({ singleProduct, handleAddProduct, handleRemoveProduct }) => {
+const MenuGridItem = ({ singleProduct }) => {
   const [selectedAttributes, setSelectedAttributes] = useState([]);
   const [targetAttribute, setTargetAttribute] = useState('');
 
@@ -54,8 +54,8 @@ const MenuGridItem = ({ singleProduct, handleAddProduct, handleRemoveProduct }) 
           <p className="menu-item__pricing-curr"><span>$</span>{singleProduct.ItemPrice}</p>
         }
         <AddToCartButton
-          handleAddProduct={handleAddProduct}
-          handleRemoveProduct={handleRemoveProduct}
+          // handleAddProduct={handleAddProduct}
+          // handleRemoveProduct={handleRemoveProduct}
           singleProduct={singleProduct}
           selectedAttributes={selectedAttributes}
           targetAttribute={targetAttribute}

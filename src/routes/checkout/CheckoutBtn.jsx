@@ -5,7 +5,7 @@ import ResetLocation from "../../helpers/ResetLocation";
 const CheckoutBtn = ({ className, isValidLogin, activateLoginModal }) => {
   return (
     <React.Fragment>
-      {isValidLogin ? (
+      {localStorage.getItem('validLogin') ? (
         <LinkButton
           onClick={ResetLocation}
           to="/checkout"

@@ -1,13 +1,36 @@
 import React from "react";
 import ChangeItemQuantity from "./ChangeItemQuantity";
-
+import { useDispatch, useSelector } from "react-redux";
+import { addProductItem } from "../../store/products";
+import { clearCart } from "../../store/orderSummary";
 const CartItem = ({
-  handleAddProduct,
-  handleRemoveProduct,
-  clearCart,
-  cartItems,
+  // handleAddProduct,
+  // handleRemoveProduct,
+  // clearCart,
+  // cartItems,
   cartTotals,
 }) => {
+
+  const cartItems = useSelector((store)=>store.products.cart)
+  const dispatch = useDispatch()
+  
+    const clearCartData = () => {
+      // setProducts((prev) => ({ ...prev, cart: [] }));
+
+      dispatch(addProductItem({
+        cart: [],
+      }))
+
+      dispatch(clearCart({
+        quantity: 0,
+        payment: 0,
+        taxes: 0,
+      }))
+      sessionStorage.removeItem("cartItems");
+      sessionStorage.removeItem("cartQuantity");
+      ResetLocation();
+    };
+  
   return (
     <section className="cart__items">
       {cartItems.map((cartItem, index) => {
@@ -37,8 +60,8 @@ const CartItem = ({
               </header>
               <div className="cart__items__interaction">
                 <ChangeItemQuantity
-                  handleAddProduct={handleAddProduct}
-                  handleRemoveProduct={handleRemoveProduct}
+                  // handleAddProduct={handleAddProduct}
+                  // handleRemoveProduct={handleRemoveProduct}
                   cartItem={cartItem}
                 />
                 <p className="cart__items__pricing">${cartItem.ItemPrice}</p>
@@ -49,7 +72,7 @@ const CartItem = ({
       })}
       {cartItems.length > 0 && (
         <button
-          onClick={clearCart}
+          onClick={clearCartData}
           className="cart__items__clear-btns"
           aria-label="remove all items from the cart">
           remove all items from the cart

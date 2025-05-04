@@ -2,13 +2,16 @@ import React from "react";
 import CheckoutBtn from "../checkout/CheckoutBtn";
 import LinkButton from "../../components/Button";
 import ResetLocation from "../../helpers/ResetLocation";
-
+import { useDispatch,useSelector } from "react-redux";
 const CartTotals = ({
-  orderSummary,
+  // orderSummary,
   className,
   isValidLogin,
   activateLoginModal,
 }) => {
+  // const dispatch = useDispatch()
+  const orderSummary = useSelector((store) => store.orderSummary.summeryData)
+
   return (
     <section className={className}>
       <h2 id="cart-summary-title">Cart Summary</h2>
@@ -26,7 +29,7 @@ const CartTotals = ({
         <CheckoutBtn
           className="active-button-style"
           aria-label="Contiue with checkout"
-          isValidLogin={isValidLogin}
+          // isValidLogin={isValidLogin}
           activateLoginModal={activateLoginModal}
         />
         <LinkButton

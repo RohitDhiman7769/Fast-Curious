@@ -15,7 +15,8 @@ const Attribute = ({ attribute, handleSelectedAttributes, className, targetAttri
                 ? {
                   transition: "all, ease-in-out, 0.3s",
                   color: "white",
-                  borderColor: "#fac564",
+                  // borderColor: "#fac564",
+                  borderColor: "red",
                 }
                 : null
             }

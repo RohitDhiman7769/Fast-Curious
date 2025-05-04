@@ -5,13 +5,17 @@ import CheckoutForm from "./CheckoutForm";
 import EmptyCart from "../cart/EmptyCart";
 import "./checkout.css";
 import CheckoutItem from "./CheckoutItem";
+import { useSelector } from "react-redux";
 const Checkout = ({
-  cartItems,
+  // cartItems,
   // productsQuantity,
   // totalPayment,
-  orderSummary,
+  // orderSummary,
   currentUser,
 }) => {
+  const cartItems = useSelector((store)=>store.products.items.cart)
+  const orderSummary = useSelector((store) => store.orderSummary.summeryData)
+
   return (
     <main className="checkout">
       <h2>Checkout</h2>
